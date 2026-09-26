@@ -25,6 +25,7 @@ use OpenAI\Testing\Resources\ModelsTestResource;
 use OpenAI\Testing\Resources\ModerationsTestResource;
 use OpenAI\Testing\Resources\RealtimeTestResource;
 use OpenAI\Testing\Resources\ResponsesTestResource;
+use OpenAI\Testing\Resources\SkillsTestResource;
 use OpenAI\Testing\Resources\ThreadsTestResource;
 use OpenAI\Testing\Resources\VectorStoresTestResource;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -164,6 +165,11 @@ class ClientFake implements ClientContract
     public function containers(): ContainersTestResource
     {
         return new ContainersTestResource($this);
+    }
+
+    public function skills(): SkillsTestResource
+    {
+        return new SkillsTestResource($this);
     }
 
     public function embeddings(): EmbeddingsTestResource

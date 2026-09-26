@@ -34,6 +34,8 @@ If you or your business relies on this package, it's important to support the de
   - [Conversations Items Resource](#conversations-items-resource)
   - [Containers Resource](#containers-resource)
   - [Containers Files Resource](#containers-files-resource)
+  - [Skills Resource](#skills-resource)
+  - [Skills Versions Resource](#skills-versions-resource)
   - [Chat Resource](#chat-resource)
   - [Audio Resource](#audio-resource)
   - [Embeddings Resource](#embeddings-resource)
@@ -688,6 +690,167 @@ $response->object; // 'container.file.deleted'
 $response->deleted; // true
 
 $response->toArray(); // ['id' => 'cfile_...', 'object' => 'container.file.deleted', 'deleted' => true]
+```
+
+### `Skills` Resource
+
+Skills give an agent reusable instructions and supporting files. Upload a skill either as a zip bundle or as a directory of files, then reference it from the Responses API shell tool via `skill_reference`.
+
+#### `create`
+
+Creates a skill from a zip bundle, or from several files that share a single top-level folder.
+
+```php
+// Zip upload
+$response = $client->skills()->create([
+    'files' => fopen('basic_math.zip', 'r'),
+]);
+
+// Directory upload
+$response = $client->skills()->create([
+    'files' => [
+        fopen('basic_math/SKILL.md', 'r'),
+        fopen('basic_math/calculate.py', 'r'),
+    ],
+]);
+
+$response->id; // 'skill_abc123'
+$response->name; // 'basic-math'
+$response->defaultVersion; // '1'
+$response->latestVersion; // '1'
+
+$response->toArray(); // ['id' => 'skill_abc123', ...]
+```
+
+#### `list`
+
+Lists the skills in the current project.
+
+```php
+$response = $client->skills()->list([
+    'limit' => 10,
+]);
+
+$response->object; // 'list'
+$response->hasMore; // false
+
+foreach ($response->data as $result) {
+    $result->id; // 'skill_abc123'
+    $result->name; // 'basic-math'
+}
+
+$response->toArray(); // ['object' => 'list', 'data' => [...], ...]
+```
+
+#### `retrieve`
+
+Retrieves a skill by its ID.
+
+```php
+$response = $client->skills()->retrieve('skill_abc123');
+
+$response->id; // 'skill_abc123'
+$response->description; // 'Add or multiply numbers.'
+
+$response->toArray(); // ['id' => 'skill_abc123', ...]
+```
+
+#### `update`
+
+Updates the default version pointer for a skill.
+
+```php
+$response = $client->skills()->update('skill_abc123', [
+    'default_version' => '2',
+]);
+
+$response->defaultVersion; // '2'
+```
+
+#### `content`
+
+Downloads the zip bundle for a skill's default version.
+
+```php
+$zip = $client->skills()->content('skill_abc123');
+
+file_put_contents('basic_math.zip', $zip);
+```
+
+#### `delete`
+
+Deletes a skill and all of its versions.
+
+```php
+$response = $client->skills()->delete('skill_abc123');
+
+$response->id; // 'skill_abc123'
+$response->object; // 'skill.deleted'
+$response->deleted; // true
+
+$response->toArray(); // ['id' => 'skill_abc123', ...]
+```
+
+### `Skills Versions` Resource
+
+#### `create`
+
+Creates a new immutable version of a skill. Pass `default` to make it the default version.
+
+```php
+$response = $client->skills()->versions()->create('skill_abc123', [
+    'files' => fopen('basic_math_v2.zip', 'r'),
+    'default' => 'true',
+]);
+
+$response->id; // 'skillver_abc123'
+$response->version; // '2'
+
+$response->toArray(); // ['id' => 'skillver_abc123', ...]
+```
+
+#### `list`
+
+Lists the versions of a skill.
+
+```php
+$response = $client->skills()->versions()->list('skill_abc123', [
+    'order' => 'desc',
+]);
+
+foreach ($response->data as $result) {
+    $result->version; // '2'
+}
+```
+
+#### `retrieve`
+
+Retrieves a specific version of a skill.
+
+```php
+$response = $client->skills()->versions()->retrieve('skill_abc123', '2');
+
+$response->skillId; // 'skill_abc123'
+$response->version; // '2'
+```
+
+#### `content`
+
+Downloads the zip bundle for a specific skill version.
+
+```php
+$zip = $client->skills()->versions()->content('skill_abc123', '2');
+```
+
+#### `delete`
+
+Deletes a skill version. The default version cannot be deleted; set another default first.
+
+```php
+$response = $client->skills()->versions()->delete('skill_abc123', '1');
+
+$response->object; // 'skill.version.deleted'
+$response->deleted; // true
 ```
 
 ### `Chat` Resource

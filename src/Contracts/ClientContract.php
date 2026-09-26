@@ -19,6 +19,7 @@ use OpenAI\Contracts\Resources\ModelsContract;
 use OpenAI\Contracts\Resources\ModerationsContract;
 use OpenAI\Contracts\Resources\RealtimeContract;
 use OpenAI\Contracts\Resources\ResponsesContract;
+use OpenAI\Contracts\Resources\SkillsContract;
 use OpenAI\Contracts\Resources\ThreadsContract;
 use OpenAI\Contracts\Resources\VectorStoresContract;
 
@@ -66,6 +67,13 @@ interface ClientContract
      * @see https://platform.openai.com/docs/api-reference/containers
      */
     public function containers(): ContainersContract;
+
+    /**
+     * Create and manage skills for use with the Responses API shell tools.
+     *
+     * @see https://developers.openai.com/api/reference/resources/skills
+     */
+    public function skills(): SkillsContract;
 
     /**
      * Get a vector representation of a given input that can be easily consumed by machine learning models and algorithms.

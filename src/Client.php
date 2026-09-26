@@ -26,6 +26,7 @@ use OpenAI\Resources\Models;
 use OpenAI\Resources\Moderations;
 use OpenAI\Resources\Realtime;
 use OpenAI\Resources\Responses;
+use OpenAI\Resources\Skills;
 use OpenAI\Resources\Threads;
 use OpenAI\Resources\VectorStores;
 
@@ -88,6 +89,16 @@ final class Client implements ClientContract
     public function containers(): Containers
     {
         return new Containers($this->transporter);
+    }
+
+    /**
+     * Create and manage skills for use with the Responses API shell tools.
+     *
+     * @see https://developers.openai.com/api/reference/resources/skills
+     */
+    public function skills(): Skills
+    {
+        return new Skills($this->transporter);
     }
 
     /**
